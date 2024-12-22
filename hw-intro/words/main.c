@@ -47,10 +47,27 @@ WordCount *word_counts = NULL;
 int num_words(FILE* infile) {
   int num_words = 0;
 
+  char ch;
+  size_t word_length = 0;
+  while((ch = fgetc(infile)) != EOF){
+    if(isalpha(ch)){
+      continue;
+    }else{
+      if(word_length > 1){
+        num_words++;
+      }else{
+        word_length = 0;
+      }
+    }
+  }
+  if(word_length > 1){
+    ++num_words;
+  }
+
   return num_words;
 }
 
-/*
+/*½.
  * 3.1.2 Word Frequency Count
  *
  * Given infile, extracts and adds each word in the FILE to `wclist`.
