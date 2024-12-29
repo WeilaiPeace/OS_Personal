@@ -45,26 +45,28 @@ WordCount *word_counts = NULL;
  * Useful functions: fgetc(), isalpha().
  */
 int num_words(FILE* infile) {
-  int num_words = 0;
+  int number_words = 0;
 
   char ch;
   size_t word_length = 0;
   while((ch = fgetc(infile)) != EOF){
     if(isalpha(ch)){
+      word_length ++;
       continue;
     }else{
       if(word_length > 1){
-        num_words++;
+        number_words++;
+        word_length = 0;
       }else{
         word_length = 0;
       }
     }
   }
   if(word_length > 1){
-    ++num_words;
+    ++number_words;
   }
 
-  return num_words;
+  return number_words;
 }
 
 /*½.
@@ -150,10 +152,20 @@ int main (int argc, char *argv[]) {
   if ((argc - optind) < 1) {
     // No input file specified, instead, read from STDIN instead.
     infile = stdin;
+    total_words = num_words(infile);
   } else {
     // At least one file specified. Useful functions: fopen(), fclose().
     // The first file can be found at argv[optind]. The last file can be
     // found at argv[argc-1].
+    for( int i = 1; i < argc; ++i){
+      infile = fopen( argv[i] , "r");
+      if(!infile){
+        perror(argv[i]);
+        continue;
+      }
+      total_words +=  num_words(infile);
+      fclose(infile);
+    }
   }
 
   if (count_mode) {
