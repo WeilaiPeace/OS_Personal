@@ -89,7 +89,10 @@ int count_words(WordCount **wclist, FILE *infile) {
  * Useful function: strcmp().
  */
 static bool wordcount_less(const WordCount *wc1, const WordCount *wc2) {
-  return 0;
+  if(wc1->count == wc2->count){
+    return strcmp(wc1->word, wc2->word);
+  }
+  return wc1->count - wc2->count;
 }
 
 // In trying times, displays a helpful message.
