@@ -69,7 +69,7 @@ int num_words(FILE* infile) {
   return number_words;
 }
 
-/*½.
+/*
  * 3.1.2 Word Frequency Count
  *
  * Given infile, extracts and adds each word in the FILE to `wclist`.
@@ -81,6 +81,28 @@ int num_words(FILE* infile) {
  * and 0 otherwise.
  */
 int count_words(WordCount **wclist, FILE *infile) {
+  char *word = (char *)malloc(MAX_WORD_LEN + 1);
+  char ch;
+  int cur_length = 0;
+  do{
+    ch = fgetc(infile);
+    if(isalpha(ch)){
+      ch = tolower(ch);
+      if(cur_length < MAX_WORD_LEN){
+        word[cur_length] = ch;
+        cur_length += 1;
+      }else if(cur_length == MAX_WORD_LEN){
+        word[cur_length] = '\0';
+        add_word(wclist , word);
+        word[0] = ch;
+        cur_length = 1;
+      }else if(cur_length > 1){
+        word[cur_length] = '\0';
+        add_word(wclist , word);
+        cur_length = 0;
+      }
+    }
+  }while(ch != EOF);
   return 0;
 }
 
@@ -115,7 +137,6 @@ int main (int argc, char *argv[]) {
 
   // Freq Mode: outputs the frequency of each word
   bool freq_mode = false;
-
   FILE *infile = NULL;
 
   // Variables for command line argument parsing
@@ -166,7 +187,11 @@ int main (int argc, char *argv[]) {
         perror(argv[i]);
         continue;
       }
-      total_words +=  num_words(infile);
+      if(count_mode){
+        total_words += num_words(infile);
+      }else{
+        count_words(&word_counts, infile);
+      }
       fclose(infile);
     }
   }
