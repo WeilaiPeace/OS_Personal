@@ -104,11 +104,13 @@ int count_words(WordCount **wclist, FILE *infile) {
         add_word(wclist , word);
         word[0] = ch;
         cur_length = 1;
-      }else if(cur_length > 1){
-        word[cur_length] = '\0';
-        add_word(wclist , word);
-        cur_length = 0;
       }
+    }else if(cur_length > 1){
+      word[cur_length] = '\0';
+      add_word(wclist , word);
+      cur_length = 0;
+    }else{
+      cur_length = 0;
     }
   }while(ch != EOF);
 
@@ -219,5 +221,6 @@ int main (int argc, char *argv[]) {
     printf("The frequencies of each word are: \n");
     fprint_words(word_counts, stdout);
 }
+  free_words(word_counts);
   return 0;
 }
