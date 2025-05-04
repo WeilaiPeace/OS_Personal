@@ -473,13 +473,34 @@ static bool setup_stack(void** esp) {
   if (kpage != NULL) {
     success = install_page(((uint8_t*)PHYS_BASE) - PGSIZE, kpage, true);
     if (success){
-      *esp = PHYS_BASE-12;//at least leave 12 bytes for fake return address, argc and argv, in fact you can leave 13,14,15,16,17,... bytes
+      //Solution 1: for Project 0_ TEST 1 and TEST 2
+      //*esp = PHYS_BASE-12;//at least leave 12 bytes for fake return address, argc and argv, in fact you can leave 13,14,15,16,17,... bytes
       //by the way, (*esp + 12) is PHYS_BASE, don't write any content
-      *(uint32_t*)(*esp + 8) = 0;//argv = 0
-      *(uint32_t*)(*esp + 4) = 1;//agrv = 1
-      *(uint32_t*)(*esp + 0) = 0;//fake return address
+      // *(uint32_t*)(*esp + 8) = 0;//argv[0] = 0
+      // *(uint32_t*)(*esp + 4) = 1;//agrc = 1
+      // *(uint32_t*)(*esp + 0) = 0;//fake return address
 
-      //the rest memory need to satisfy the requirements: 16 bytes alignment + esp % 16 == 8
+
+      //Solution 2: for Project 0_ TEST 1 and TEST 2
+      // uint32_t *stack_top = (uint32_t *)(PHYS_BASE - 12);
+      // *(stack_top + 2) = 0;
+      // *(stack_top + 1) = 1;
+      // *(stack_top + 0) = 0;
+      // *esp = stack_top;
+
+      //Solution 3: for Project 0_ TEST 1 and TEST 2 and TEST 3
+      //the rest memory need to satisfy the requirements: 16 bytes alignment, it looks like need to esp % 16 == 0,in fact, we need to esp % 16 == 8 , because we need to extra 8 bytes to store into 2 value from the callee, besides, we need to prepare some paddings before esp, so PHYS_BASE - 12 is not enough ,we need more space
+      uint32_t *stack_top = (uint32_t *)PHYS_BASE;
+      while (((uintptr_t)stack_top - 16) % 16 != 8 ){//关于减去16这一点，网上的解释我有点困惑，先暂时闲置
+        *(--stack_top) = 0;
+      }
+      *(--stack_top) = 0;//argv[0]
+      *(--stack_top) = 1;//argc
+      *(--stack_top) = 0;//fake return address
+      *esp = stack_top;
+
+
+
     }
     else
       palloc_free_page(kpage);
