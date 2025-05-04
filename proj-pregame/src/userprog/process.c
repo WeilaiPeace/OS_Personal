@@ -473,11 +473,11 @@ static bool setup_stack(void** esp) {
   if (kpage != NULL) {
     success = install_page(((uint8_t*)PHYS_BASE) - PGSIZE, kpage, true);
     if (success){
-      *esp = PHYS_BASE-12;//at lease leave 12 bytes for fake return address, argc and argv, in fact you can leave 13,14,15,16,17,... bytes
-      *(uint32_t*)(*esp + 0) = 0;//fake return address
-      *(uint32_t*)(*esp + 4) = 1;//agrv = 1
-      *(uint32_t*)(*esp + 8) = 0;//argv = 0
+      *esp = PHYS_BASE-12;//at least leave 12 bytes for fake return address, argc and argv, in fact you can leave 13,14,15,16,17,... bytes
       //by the way, (*esp + 12) is PHYS_BASE, don't write any content
+      *(uint32_t*)(*esp + 8) = 0;//argv = 0
+      *(uint32_t*)(*esp + 4) = 1;//agrv = 1
+      *(uint32_t*)(*esp + 0) = 0;//fake return address
 
       //the rest memory need to satisfy the requirements: 16 bytes alignment + esp % 16 == 8
     }
