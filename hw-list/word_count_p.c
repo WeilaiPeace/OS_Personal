@@ -46,17 +46,14 @@ size_t len_words(word_count_list_t* wclist) {
 
 word_count_t* find_word(word_count_list_t* wclist, char* word) {
   /* TODO */
-  pthread_mutex_lock(&wclist->lock);
   struct list_elem *e;
   for(e = list_begin(&wclist->lst); e != list_end(&wclist->lst); e = list_next(e)){
     word_count_t *wc = list_entry(e, word_count_t, elem);
     if(strcmp(wc->word,word) == 0){//if find the word, ite will jump to the next line 
-      pthread_mutex_unlock(&wclist->lock);
       return wc;
     }
   }
   //if jump to here, means can't find the word, the word is fresh
-  pthread_mutex_unlock(&wclist->lock);
   return NULL;
 }
 
